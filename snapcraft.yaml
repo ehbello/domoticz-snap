@@ -1,0 +1,67 @@
+name: domoticz
+version: 3.4834
+summary: Very light weight home automation system
+description: |
+    Domoticz is a Home Automation System that lets you monitor and
+    configure various devices like Lights, Switches, various
+    sensors/meters like Temperature, Rain, Wind, UV, Electra, Gas, Water
+    and much more. Notifications/Alerts can be sent to any mobile device.
+confinement: devmode
+
+apps:
+    domoticz:
+        command: opt/domoticz/domoticz
+            -dbase $SNAP_DATA/domoticz.db
+            -log $SNAP_DATA/domoticz.log
+            -loglevel 1
+            -verbose 1
+            -syslog
+        daemon: simple
+        plugs: [network, network-bind]
+
+parts:
+#    telldus-core:
+#    # http://developer.telldus.com/wiki/TellStickInstallationSource
+#        plugin: cmake
+#        source: http://download.telldus.se/TellStick/Software/telldus-core/telldus-core-2.1.2.tar.gz
+#        configflags:
+#            -   -DCMAKE_INSTALL_PREFIX=/usr
+#        build-packages:
+#            -   build-essential
+#            -   libftdi-dev
+#            -   libconfuse-dev
+    openzwave:
+    # https://github.com/OpenZWave/open-zwave/blob/master/INSTALL
+        plugin: make
+        source: https://github.com/OpenZWave/open-zwave.git
+        source-tag: "v1.4"
+        make-parameters:
+            -   PREFIX=/usr
+            -   instlibdir=/usr/lib/x86_64-linux-gnu/
+        build-packages:
+            -   build-essential
+            -   libudev-dev
+            -   pkg-config
+    domoticz:
+    # https://www.domoticz.com/wiki/Linux
+        plugin: cmake
+        source: https://github.com/domoticz/domoticz.git
+        source-tag: "3.4834"
+        after: [ openzwave ]
+        configflags:
+            -   -DCMAKE_BUILD_TYPE=Release
+            -   -DCMAKE_INSTALL_PREFIX=/opt/domoticz # workaround
+            -   -DUSE_STATIC_OPENZWAVE=OFF
+        build-packages:
+            -   build-essential
+            -   libboost-thread-dev
+            -   libcurl4-openssl-dev
+            -   libssl-dev
+            -   libusb-dev
+            -   zlib1g-dev
+        stage-packages:
+            -   libcurl4-openssl-dev
+        snap:
+            -   -opt/domoticz/History.txt
+            -   -opt/domoticz/License.txt
+            -   -opt/domoticz/updatedomo
