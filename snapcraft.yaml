@@ -52,13 +52,16 @@ parts:
             -   -DCMAKE_BUILD_TYPE=Release
             -   -DCMAKE_INSTALL_PREFIX=/opt/domoticz # workaround
             -   -DUSE_STATIC_OPENZWAVE=OFF
+            -   -DUSE_PYTHON=yes
         build-packages:
             -   build-essential
             -   libboost-thread-dev
+            -   libboost-python-dev
             -   libcurl4-openssl-dev
             -   libssl-dev
             -   libusb-dev
             -   zlib1g-dev
+            -   python-dev
         stage-packages:
             -   libcurl4-openssl-dev
         snap:
